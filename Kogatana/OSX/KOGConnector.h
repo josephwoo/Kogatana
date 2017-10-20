@@ -27,4 +27,5 @@
 - (void)disconnect;
 
 - (void)handleMessage:(NSString *)message logType:(KOGLogType)type;
+- (void)sendMessage:(NSString *)aMessage;
 @end

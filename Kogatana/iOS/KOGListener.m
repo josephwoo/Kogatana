@@ -139,8 +139,6 @@ static NSString *kUnSentMessageLockToken = @"kUnSentMessageLockToken";
     }
 }
 
-// Invoked when the channel closed.
-// If it closed because of an error, *error* is a non-nil NSError object.
 - (void)ioFrameChannel:(PTChannel*)channel didEndWithError:(NSError*)error {
     if (error) {
         NSLog(@"🚫 %@ ended with error: %@", channel, error);
@@ -148,6 +146,13 @@ static NSString *kUnSentMessageLockToken = @"kUnSentMessageLockToken";
     }
 
     NSLog(@"⚠️ Disconnected from %@", channel.userInfo);
+}
+
+- (void)ioFrameChannel:(PTChannel *)channel didReceiveFrameOfType:(uint32_t)type tag:(uint32_t)tag payload:(PTData *)payload
+{
+    NSData *data = [NSData dataWithContentsOfDispatchData:payload.dispatchData];
+    NSString *logMessage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"🔵 - %@", logMessage);
 }
 
 @end

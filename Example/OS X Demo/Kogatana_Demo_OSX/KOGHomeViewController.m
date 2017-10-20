@@ -14,7 +14,9 @@
 
 static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
 
-@interface KOGHomeViewController () <KOGConnectorOutputDelegate>
+@interface KOGHomeViewController () <KOGConnectorOutputDelegate> {
+    KOGConnector *_connectedConnector;
+}
 
 @property (unsafe_unretained) IBOutlet NSTextView *outputTextView;
 @property (weak) IBOutlet NSButton *triggerButton;
@@ -99,6 +101,10 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
     [self.wifiConnector disconnect];
 }
 
+- (IBAction)sendMessage:(id)sender {
+    [_connectedConnector sendMessage:@"Hello ~~"];
+}
+
 #pragma mark - ONIUSBConnectorOutputDelegate
 static const NSTimeInterval kReconnectDelay = 1.0;
 - (void)connector:(KOGConnector *)connector didCompleteWithError:(NSError *)error
@@ -119,6 +125,7 @@ static const NSTimeInterval kReconnectDelay = 1.0;
 
     [self clearConsoleOutput];
     self.isConnected = YES;
+    _connectedConnector = connector;
 }
 
 - (void)connector:(KOGConnector *)connector didReceiveMessageType:(KOGLogType)type message:(NSString *)logMessage

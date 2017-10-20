@@ -52,6 +52,17 @@
     }
 }
 
+- (void)sendMessage:(NSString *)aMessage
+{
+    KOGatanaLog *log = [[KOGatanaLog alloc] initWithLogType:KOGLogTypeMessageNormal];
+    log.logMessage = aMessage;
+    [self.connectedChannel sendFrameOfType:log.type tag:PTFrameNoTag withPayload:log.payload callback:^(NSError *error) {
+        if (error) {
+            NSLog(@"🚫 Failed to send message: %@", error);
+        }
+    }];
+}
+
 #pragma mark - PTChannelDelegate
 
 - (BOOL)ioFrameChannel:(PTChannel*)channel shouldAcceptFrameOfType:(uint32_t)type tag:(uint32_t)tag payloadSize:(uint32_t)payloadSize {

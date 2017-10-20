@@ -799,6 +799,16 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4n0-z4-uf3">
+                                <rect key="frame" x="415" y="3" width="71" height="32"/>
+                                <buttonCell key="cell" type="push" title="Send" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="7tS-ut-JFM">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="sendMessage:" target="XfG-lQ-9wD" id="nXJ-9v-cOT"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="tHQ-4U-Kry" secondAttribute="bottom" constant="48" id="1VD-QP-dW8"/>
@@ -808,6 +818,7 @@
                             <constraint firstItem="Za5-Aa-3Md" firstAttribute="centerY" secondItem="ldI-LC-f0f" secondAttribute="centerY" id="Gbn-3W-pM9"/>
                             <constraint firstAttribute="trailing" secondItem="tHQ-4U-Kry" secondAttribute="trailing" id="L6w-cj-232"/>
                             <constraint firstItem="OUq-Ma-qWa" firstAttribute="leading" secondItem="mXm-f6-mWe" secondAttribute="trailing" constant="8" symbolic="YES" id="NUN-DM-eiF"/>
+                            <constraint firstItem="4n0-z4-uf3" firstAttribute="centerY" secondItem="uux-1Z-DOn" secondAttribute="centerY" id="Nec-uy-tBu"/>
                             <constraint firstItem="tHQ-4U-Kry" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="Nhz-em-EbM"/>
                             <constraint firstItem="ldI-LC-f0f" firstAttribute="leading" secondItem="OUq-Ma-qWa" secondAttribute="trailing" constant="8" symbolic="YES" id="ZcF-7Y-Jn1"/>
                             <constraint firstItem="uux-1Z-DOn" firstAttribute="centerX" secondItem="tHQ-4U-Kry" secondAttribute="centerX" id="f22-l1-iA9"/>
@@ -815,6 +826,7 @@
                             <constraint firstItem="mXm-f6-mWe" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="ibq-Ov-12O"/>
                             <constraint firstItem="uux-1Z-DOn" firstAttribute="top" secondItem="tHQ-4U-Kry" secondAttribute="bottom" constant="16" id="kSm-ya-i6y"/>
                             <constraint firstItem="Za5-Aa-3Md" firstAttribute="leading" secondItem="ldI-LC-f0f" secondAttribute="trailing" constant="8" symbolic="YES" id="mrZ-iw-0Mu"/>
+                            <constraint firstAttribute="trailing" secondItem="4n0-z4-uf3" secondAttribute="trailing" constant="20" symbolic="YES" id="p1c-WW-WS7"/>
                             <constraint firstAttribute="bottom" secondItem="uux-1Z-DOn" secondAttribute="bottom" constant="8" id="whG-69-4Rs"/>
                             <constraint firstItem="tHQ-4U-Kry" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="zsZ-iW-a2l"/>
                         </constraints>
