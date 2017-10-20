@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="whP-gf-Uak">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="wQg-tq-qST">
+            <objects>
+                <viewController id="whP-gf-Uak" customClass="KOGViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="uEw-UM-LJ8"/>
+                        <viewControllerLayoutGuide type="bottom" id="Mvr-aV-6Um"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="TpU-gO-2f1">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mnf-9L-cYi">
+                                <rect key="frame" x="16" y="28" width="120" height="30"/>
+                                <state key="normal" title="📡 DebugOnPort"/>
+                                <connections>
+                                    <action selector="enableDebugLog:" destination="whP-gf-Uak" eventType="touchUpInside" id="y7s-RH-JjQ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bMb-e4-fkK">
+                                <rect key="frame" x="155" y="318" width="65" height="30"/>
+                                <state key="normal" title="Send Log"/>
+                                <connections>
+                                    <action selector="sendLog:" destination="whP-gf-Uak" eventType="touchUpInside" id="J87-Ao-0XV"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tqz-dx-Mle">
+                                <rect key="frame" x="136" y="412" width="103" height="30"/>
+                                <state key="normal" title="Send Error Log">
+                                    <color key="titleColor" red="0.50196081400000003" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="sendErrorLog:" destination="whP-gf-Uak" eventType="touchUpInside" id="YwX-aw-Hia"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="7579" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tfy-hb-DG7">
+                                <rect key="frame" x="144" y="28" width="211" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Mnf-9L-cYi" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leadingMargin" id="1aP-vu-ZsT"/>
+                            <constraint firstItem="tfy-hb-DG7" firstAttribute="top" secondItem="Mnf-9L-cYi" secondAttribute="top" id="6bn-Bw-jMD"/>
+                            <constraint firstItem="bMb-e4-fkK" firstAttribute="centerX" secondItem="TpU-gO-2f1" secondAttribute="centerX" id="F6f-vo-djP"/>
+                            <constraint firstAttribute="trailing" secondItem="tfy-hb-DG7" secondAttribute="trailing" constant="20" symbolic="YES" id="GcR-Hu-qKD"/>
+                            <constraint firstItem="tfy-hb-DG7" firstAttribute="leading" secondItem="Mnf-9L-cYi" secondAttribute="trailing" constant="8" symbolic="YES" id="QyR-XG-XI4"/>
+                            <constraint firstItem="bMb-e4-fkK" firstAttribute="centerY" secondItem="TpU-gO-2f1" secondAttribute="centerY" id="j8b-ly-QRE"/>
+                            <constraint firstItem="tqz-dx-Mle" firstAttribute="centerX" secondItem="bMb-e4-fkK" secondAttribute="centerX" id="k7j-fm-UWB"/>
+                            <constraint firstItem="Mnf-9L-cYi" firstAttribute="top" secondItem="uEw-UM-LJ8" secondAttribute="bottom" constant="8" symbolic="YES" id="sc1-8b-uqu"/>
+                            <constraint firstItem="tqz-dx-Mle" firstAttribute="top" secondItem="bMb-e4-fkK" secondAttribute="bottom" constant="64" id="zk6-So-5CJ"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="portTextField" destination="tfy-hb-DG7" id="Ii1-Zw-ik3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tc2-Qw-aMS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="304.80000000000001" y="432.23388305847078"/>
+        </scene>
+    </scenes>
+</document>
