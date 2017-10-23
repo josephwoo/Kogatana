@@ -47,6 +47,7 @@ static void _release_queue_local_protocol(void *objcobj) {
 @end
 @implementation RQueueLocalIOFrameProtocol
 - (void)setQueue:(dispatch_queue_t)queue {
+    [super setQueue:queue];
 }
 @end
 

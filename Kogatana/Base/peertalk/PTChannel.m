@@ -264,7 +264,10 @@ static const uint8_t kUserInfoKey;
   //  if (callback) callback([[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:error userInfo:nil], nil);
   //  return;
   //}
-  
+
+    if (!protocol_.queue) {
+        [protocol_ setQueue:dispatch_get_main_queue()];
+    }
   dispatch_io_t dispatchChannel = dispatch_io_create(DISPATCH_IO_STREAM, fd, protocol_.queue, ^(int error) {
     close(fd);
     if (delegateFlags_ & kDelegateFlagImplements_ioFrameChannel_didEndWithError) {
