@@ -25,7 +25,8 @@
         if (self.isConnected) {
             self.connectedChannel = channel;
         } else {
-            NSLog(@"🚫 Failed to connect to device: %@", error);
+//            NSLog(@"🚫 Failed to connect to device: %@", error);
+            NSLog(@"🚫 Failed to connect by Wi-Fi");
         }
 
         if (completionHandler) { completionHandler(self.isConnected, error); }

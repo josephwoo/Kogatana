@@ -32,15 +32,11 @@
         NSNumber *deviceID = [note.userInfo objectForKey:@"DeviceID"];
         NSLog(@"PTUSBDeviceDidAttachNotification: %@", deviceID);
         self.currentConnectedDeviceID = deviceID;
-
-        //[self handleMessage:@"[Status]: 🔌 USB attached to Mac! \n[Status]: Please enable 📡 debug service inside iOS App, then click \'Connect\'" logType:KOGLogTypeStateLogNormal];
     }];
 
     [nc addObserverForName:PTUSBDeviceDidDetachNotification object:PTUSBHub.sharedHub queue:nil usingBlock:^(NSNotification *note) {
         NSNumber *deviceID = [note.userInfo objectForKey:@"DeviceID"];
         NSLog(@"PTUSBDeviceDidDetachNotification: %@", deviceID);
-
-        //[self handleMessage:@"[Status]: ⚠️ USB detached From Mac" logType:KOGLogTypeStateLogCaution];
     }];
 }
 
@@ -52,7 +48,8 @@
         if (self.isConnected) {
             self.connectedChannel = channel;
         } else {
-            NSLog(@"🚫 Failed to connect to device: %@", error);
+//            NSLog(@"🚫 Failed to connect to device: %@", error);
+            NSLog(@"🚫 Failed to connect by USB");
         }
 
         if (completionHandler) { completionHandler(self.isConnected, error); }

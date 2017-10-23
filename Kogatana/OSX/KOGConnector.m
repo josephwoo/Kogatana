@@ -13,7 +13,7 @@
 #import "KOGWiFiConnector.h"
 
 @interface KOGConnector () <PTChannelDelegate>
-@property (nonatomic, strong) dispatch_group_t connectGroup;
+@property (nonatomic, strong) dispatch_queue_t connectQueue;
 @property (nonatomic, weak) id<KOGConnectionDelegate> connectionDelegate;
 @property (nonatomic, weak) KOGConnectorInterface *connectedConnector;
 @property (nonatomic, strong) NSArray<KOGConnectorInterface *> *connectors;
@@ -26,7 +26,7 @@
 {
     self = [super init];
     if (self) {
-        _connectGroup = dispatch_group_create();
+        _connectQueue = dispatch_queue_create("com.joe.kogatanaQueue", DISPATCH_QUEUE_SERIAL);
         _connectionDelegate = delegate;
     }
 
@@ -41,36 +41,27 @@
 {
     if (self.isConnected) return;
 
-    int port = aPortNumber.intValue;
-    if (port <= 1024 || port > 65535) {
-        NSLog(@"🚫 Illegal Port Number!");
-        return;
-    }
-
-    __block NSError *connectError = nil;
-    dispatch_queue_t backgroundQueue = dispatch_get_global_queue(0, 0);
+    __block NSUInteger lastCallbackFlag = self.connectors.count;
     for (KOGConnectorInterface *aConnector in self.connectors) {
-        dispatch_group_async(self.connectGroup, backgroundQueue, ^{
-            [aConnector connectToPort:port completionHandler:^(BOOL success, NSError *error) {
+        [aConnector connectToPort:aPortNumber.intValue completionHandler:^(BOOL success, NSError *error) {
+            dispatch_async(self.connectQueue, ^{
                 if (success) {
                     self.isConnected = YES;
                     self.connectedConnector = aConnector;
-                } else {
-                    connectError = error;
                 }
-            }];
-        });
-    }
 
-    dispatch_group_notify(self.connectGroup, dispatch_get_main_queue(), ^{
-        __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
-        if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didFinishConnectionWithError:)]) {
-            NSError *error = self.isConnected ? nil : connectError;
-            @within_main_thread(^void() {
-                [strongDelegate connector:self didFinishConnectionWithError:error];
+                lastCallbackFlag --;
+                if (lastCallbackFlag == 0) {
+                    __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
+                    if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didFinishConnectionWithError:)]) {
+                        @within_main_thread(^void() {
+                            [strongDelegate connector:self didFinishConnectionWithError: self.isConnected ? nil : error];
+                        });
+                    }
+                }
             });
-        }
-    });
+        }];
+    }
 }
 
 - (void)disconnect
