@@ -268,8 +268,8 @@ static const uint8_t kUserInfoKey;
   dispatch_io_t dispatchChannel = dispatch_io_create(DISPATCH_IO_STREAM, fd, protocol_.queue, ^(int error) {
     close(fd);
     if (delegateFlags_ & kDelegateFlagImplements_ioFrameChannel_didEndWithError) {
-      NSError *err = error == 0 ? endError_ : [[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:error userInfo:nil];
-      [delegate_ ioFrameChannel:self didEndWithError:err];
+        NSError *endErr = [[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:ENETDOWN userInfo:nil];
+      [delegate_ ioFrameChannel:self didEndWithError:endErr];
       endError_ = nil;
     }
   });

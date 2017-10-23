@@ -6,9 +6,8 @@
 //  Copyright © 2017 Joe 楠. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "KOGConnector.h"
+#import "KOGConnectorInterface.h"
 
-@interface KOGUSBConnector : KOGConnector
-
+@interface KOGUSBConnector : KOGConnectorInterface
 @end
+

@@ -14,11 +14,11 @@
 @end
 
 @implementation KOGUSBConnector
-
-- (instancetype)initWithDelegate:(id<KOGConnectorOutputDelegate>)delegate
+- (instancetype)initWithPTChannelDelegate:(id<PTChannelDelegate>)aChannelDelegate
 {
-    self = [super initWithDelegate:delegate];
+    self = [super init];
     if (self) {
+        self.channelDelegate = aChannelDelegate;
         [self startListeningForDevices];
     }
     return self;
@@ -33,49 +33,31 @@
         NSLog(@"PTUSBDeviceDidAttachNotification: %@", deviceID);
         self.currentConnectedDeviceID = deviceID;
 
-        [self handleMessage:@"[Status]: 🔌 USB attached to Mac! \n[Status]: Please enable 📡 debug service inside iOS App, then click \'Connect\'" logType:KOGLogTypeStateLogNormal];
+        //[self handleMessage:@"[Status]: 🔌 USB attached to Mac! \n[Status]: Please enable 📡 debug service inside iOS App, then click \'Connect\'" logType:KOGLogTypeStateLogNormal];
     }];
 
     [nc addObserverForName:PTUSBDeviceDidDetachNotification object:PTUSBHub.sharedHub queue:nil usingBlock:^(NSNotification *note) {
         NSNumber *deviceID = [note.userInfo objectForKey:@"DeviceID"];
         NSLog(@"PTUSBDeviceDidDetachNotification: %@", deviceID);
 
-        [self disconnect];
-        [self handleMessage:@"[Status]: ⚠️ USB detached From Mac" logType:KOGLogTypeStateLogCaution];
+        //[self handleMessage:@"[Status]: ⚠️ USB detached From Mac" logType:KOGLogTypeStateLogCaution];
     }];
 }
 
-- (void)connect
+- (void)connectToPort:(int)aPort completionHandler:(void (^)(BOOL, NSError *))completionHandler
 {
-    dispatch_async(self.connectedQueue, ^{
-        if (self.isConnectedToDevice) return;
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self connectToDeviceByUSBHub];
-        });
-    });
-}
-
-- (void)connectToPort:(int)aPort
-{
-    [super connectToPort:aPort];
-    [self connect];
-}
-
-- (void)connectToDeviceByUSBHub
-{
-    PTChannel *channel = [PTChannel channelWithDelegate:self];
-    [channel connectToPort:self.connectPort overUSBHub:PTUSBHub.sharedHub deviceID:self.currentConnectedDeviceID callback:^(NSError *error) {
-        if (nil == error) {
+    PTChannel *channel = [PTChannel channelWithDelegate:self.channelDelegate];
+    [channel connectToPort:aPort overUSBHub:PTUSBHub.sharedHub deviceID:self.currentConnectedDeviceID callback:^(NSError *error) {
+        self.isConnected = (nil == error);
+        if (self.isConnected) {
             self.connectedChannel = channel;
-            self.isConnectedToDevice = YES;
+        } else {
+            NSLog(@"🚫 Failed to connect to device: %@", error);
         }
 
-        __strong id<KOGConnectorOutputDelegate> strongDelegate = self.outputHandler;
-        if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didCompleteWithError:)]) {
-            [strongDelegate connector:self didCompleteWithError:error];
-        }
+        if (completionHandler) { completionHandler(self.isConnected, error); }
     }];
 }
 
 @end
+

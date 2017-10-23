@@ -8,47 +8,29 @@
 #import "KOGWiFiConnector.h"
 
 @implementation KOGWiFiConnector
-
-- (instancetype)initWithDelegate:(id<KOGConnectorOutputDelegate>)delegate
+- (instancetype)initWithPTChannelDelegate:(id<PTChannelDelegate>)aChannelDelegate
 {
-    self = [super initWithDelegate:delegate];
+    self = [super init];
     if (self) {
-
+        self.channelDelegate = aChannelDelegate;
     }
     return self;
 }
 
-- (void)connect
+- (void)connectToPort:(int)aPort completionHandler:(void (^)(BOOL, NSError *))completionHandler
 {
-    dispatch_async(self.connectedQueue, ^{
-        if (self.isConnectedToDevice) return;
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self connectToDeviceOverWiFi];
-        });
-    });
-}
-
-- (void)connectToPort:(int)aPort
-{
-    [super connectToPort:aPort];
-    [self connect];
-}
-
-- (void)connectToDeviceOverWiFi
-{
-    PTChannel *channel = [PTChannel channelWithDelegate:self];
-    [channel connectToPort:self.connectPort IPv4Address:INADDR_LOOPBACK callback:^(NSError *error, PTAddress *address) {
-        if (nil == error) {
+    PTChannel *channel = [PTChannel channelWithDelegate:self.channelDelegate];
+    [channel connectToPort:aPort IPv4Address:INADDR_LOOPBACK callback:^(NSError *error, PTAddress *address) {
+        self.isConnected = (nil == error);
+        if (self.isConnected) {
             self.connectedChannel = channel;
-            self.isConnectedToDevice = YES;
+        } else {
+            NSLog(@"🚫 Failed to connect to device: %@", error);
         }
 
-        __strong id<KOGConnectorOutputDelegate> strongDelegate = self.outputHandler;
-        if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didCompleteWithError:)]) {
-            [strongDelegate connector:self didCompleteWithError:error];
-        }
+        if (completionHandler) { completionHandler(self.isConnected, error); }
     }];
 }
 
 @end
+

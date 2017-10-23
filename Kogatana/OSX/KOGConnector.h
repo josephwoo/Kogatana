@@ -6,26 +6,23 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "PTChannel.h"
-
 #import "KOGatanaLog.h"
-#import "KOGConnectorOutputDelegate.h"
 
+@protocol KOGConnectionDelegate;
 
-@interface KOGConnector : NSObject <PTChannelDelegate>
+@interface KOGConnector : NSObject
+@property (nonatomic, assign, readonly) BOOL isConnected;
 
-@property (strong, nonatomic, readonly) dispatch_queue_t connectedQueue;
-@property (strong) PTChannel *connectedChannel;
-@property (nonatomic, assign) int connectPort;
-@property (nonatomic, assign) BOOL isConnectedToDevice;
-@property (weak, nonatomic, readonly) id<KOGConnectorOutputDelegate> outputHandler;
+- (instancetype)initWithDelegate:(id<KOGConnectionDelegate>)delegate;
 
-- (instancetype)initWithDelegate:(id<KOGConnectorOutputDelegate>)delegate;
-
-- (void)connect;
-- (void)connectToPort:(int)aPort;
+- (void)connectToPort:(NSNumber *)aPortNumber;
 - (void)disconnect;
 
-- (void)handleMessage:(NSString *)message logType:(KOGLogType)type;
 - (void)sendMessage:(NSString *)aMessage;
+@end
+
+@protocol KOGConnectionDelegate <NSObject>
+- (void)connector:(KOGConnector *)connector didFinishConnectionWithError:(NSError *)error;
+- (void)connector:(KOGConnector *)connector didReceiveMessageType:(KOGLogType)type message:(NSString *)logMessage;
+- (void)connector:(KOGConnector *)connector didEndWithError:(NSError*)error;
 @end

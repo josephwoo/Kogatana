@@ -9,26 +9,22 @@
 #import "KOGHomeViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
-#import <KOGUSBConnector.h>
-#import <KOGWiFiConnector.h>
+#import <KOGConnector.h>
 
 static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
 
-@interface KOGHomeViewController () <KOGConnectorOutputDelegate> {
-    KOGConnector *_connectedConnector;
-}
+@interface KOGHomeViewController () <KOGConnectionDelegate>
 
 @property (unsafe_unretained) IBOutlet NSTextView *outputTextView;
-@property (weak) IBOutlet NSButton *triggerButton;
-
-@property (weak) IBOutlet NSButton *scanCheck;
-@property (weak) IBOutlet NSProgressIndicator *scanIdicator;
-@property (weak) IBOutlet NSTextField *portTextField;
-
 @property (strong, nonatomic) NSDictionary *consoleTextAttributes;
-@property (nonatomic, strong) KOGUSBConnector *usbConnector;
-@property (strong, nonatomic) KOGWiFiConnector *wifiConnector;
-@property (assign, nonatomic) BOOL isConnected;
+
+@property (weak) IBOutlet NSButton *scanButton;
+@property (weak) IBOutlet NSProgressIndicator *scanIdicator;
+
+@property (weak) IBOutlet NSTextField *portTextField;
+@property (nonatomic, strong) KOGConnector *connector;
+@property (nonatomic, strong) NSNumber *connectPort;
+
 
 @end
 
@@ -37,44 +33,44 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.consoleTextAttributes = [self.class textAttributesMap];
-    [self addObserver:self forKeyPath:@"isConnected" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:KOGObserverContextConnectStated];
 
-    self.usbConnector = [[KOGUSBConnector alloc] initWithDelegate:self];
-    self.wifiConnector = [[KOGWiFiConnector alloc] initWithDelegate:self];
+    self.connector = [[KOGConnector alloc] initWithDelegate:self];
+    [self.connector addObserver:self forKeyPath:@"isConnected" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:KOGObserverContextConnectStated];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if (context == KOGObserverContextConnectStated) {
         NSNumber *stateNumber = change[NSKeyValueChangeNewKey];
-        BOOL isConnected = stateNumber.boolValue;
-        NSString *connectButtonTitle = isConnected ? @"🛑 Disconnect" : @"Connect";
-        [self.triggerButton setTitle:connectButtonTitle];
-        self.scanCheck.enabled = !isConnected;
-        self.portTextField.enabled = !isConnected;
-
-        [self.scanCheck setState:NSControlStateValueOff];
-        [self.scanIdicator stopAnimation:nil];
+        [self updateScanButtonUIWithConnetorState:stateNumber.boolValue];
     }
 }
 
+- (void)updateScanButtonUIWithConnetorState:(BOOL)isConnected
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.scanIdicator stopAnimation:nil];
+        NSString *connectButtonTitle = isConnected ? @"🛑 Stop" : @"Scan";
+        [self.scanButton setTitle:connectButtonTitle];
+        [self.scanButton setTag:isConnected];
+        self.portTextField.enabled = !isConnected;
+    });
+}
 #pragma mark init END -
 
-- (IBAction)connectToDevice:(NSButton *)sender
-{
-    if (self.isConnected) {
-        [self _disconnectToDevice];
-    } else {
-        [self _connectToDevice];
-    }
-}
-
 - (IBAction)scanToConnect:(NSButton *)sender {
-    if (sender.state == NSControlStateValueOn) {
+    BOOL needScan = !self.scanButton.tag;
+    NSString *connectButtonTitle = needScan ? @"🛑 Stop" : @"Scan";
+    [self.scanButton setTitle:connectButtonTitle];
+    [self.scanButton setTag:needScan];
+    self.portTextField.enabled = !needScan;
+
+    if (needScan) {
         [self.scanIdicator startAnimation:nil];
         [self _connectToDevice];
     } else {
         [self.scanIdicator stopAnimation:nil];
+        [self.connector disconnect];
     }
 }
 
@@ -91,52 +87,38 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
         return;
     }
 
-    [self.usbConnector connectToPort:port];
-    [self.wifiConnector connectToPort:port];
-}
-
-- (void)_disconnectToDevice
-{
-    [self.usbConnector disconnect];
-    [self.wifiConnector disconnect];
+    self.connectPort = @(port);
+    [self.connector connectToPort:self.connectPort];
 }
 
 - (IBAction)sendMessage:(id)sender {
-    [_connectedConnector sendMessage:@"Hello ~~"];
+    [self.connector sendMessage:@"Hello ~~"];
 }
 
 #pragma mark - ONIUSBConnectorOutputDelegate
 static const NSTimeInterval kReconnectDelay = 1.0;
-- (void)connector:(KOGConnector *)connector didCompleteWithError:(NSError *)error
+- (void)connector:(KOGConnector *)connector didFinishConnectionWithError:(NSError *)error
+{
+    if (error && self.scanButton.tag) {
+        [connector performSelector:@selector(connectToPort:) withObject:self.connectPort afterDelay:kReconnectDelay];
+    } else {
+        if (self.scanButton.tag) {
+            self.connector = connector;
+            [self clearConsoleOutput];
+        }
+    }
+}
+
+- (void)connector:(KOGConnector *)connector didEndWithError:(NSError *)error
 {
     if (error) {
-        if (error.code == ENETDOWN) {
-            [self presentMessage:@"[Status]: ⚠️ Closed Connection!" consoleTextAttributes:KOGLogTypeStateLogCaution];
-            self.isConnected = NO;
-        }
-
-        if (self.scanCheck.state == NSControlStateValueOn) {
-            [connector performSelector:@selector(connect) withObject:nil afterDelay:kReconnectDelay];
-        }
-
-        NSLog(@"🚫 Failed to connect to device: %@", error);
-        return;
+        [self presentMessage:@"[Status]: ⚠️ Closed Connection!" consoleTextAttributes:KOGLogTypeStateLogCaution];
     }
-
-    [self clearConsoleOutput];
-    self.isConnected = YES;
-    _connectedConnector = connector;
 }
 
 - (void)connector:(KOGConnector *)connector didReceiveMessageType:(KOGLogType)type message:(NSString *)logMessage
 {
-    if ([[NSThread currentThread] isMainThread]) {
-        [self presentMessage:logMessage consoleTextAttributes:type];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self presentMessage:logMessage consoleTextAttributes:type];
-        });
-    }
+    [self presentMessage:logMessage consoleTextAttributes:type];
 }
 
 #pragma mark - Message Pressent

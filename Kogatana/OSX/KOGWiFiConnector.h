@@ -5,9 +5,8 @@
 //  Created by Joe 楠 on 13/10/2017.
 //
 
-#import <Foundation/Foundation.h>
-#import "KOGConnector.h"
+#import "KOGConnectorInterface.h"
 
-@interface KOGWiFiConnector : KOGConnector
+@interface KOGWiFiConnector : KOGConnectorInterface
 
 @end

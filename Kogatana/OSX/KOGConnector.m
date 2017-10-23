@@ -6,61 +6,112 @@
 //
 
 #import "KOGConnector.h"
-#import "Kogatana-prefix.h"
+#import "PTChannel.h"
+
+#import "KOGUSBConnector.h"
+#import "KOGWiFiConnector.h"
+
+@interface KOGConnector () <PTChannelDelegate>
+@property (nonatomic, strong) dispatch_group_t connectGroup;
+@property (nonatomic, weak) id<KOGConnectionDelegate> connectionDelegate;
+@property (nonatomic, weak) KOGConnectorInterface *connectedConnector;
+@property (nonatomic, strong) NSArray<KOGConnectorInterface *> *connectors;
+@property (nonatomic, assign, readwrite) BOOL isConnected;
+@end
 
 @implementation KOGConnector
-- (instancetype)initWithDelegate:(id<KOGConnectorOutputDelegate>)delegate
+
+- (instancetype)initWithDelegate:(id<KOGConnectionDelegate>)delegate
 {
     self = [super init];
     if (self) {
-        _connectedQueue = dispatch_queue_create("com.joe.onimaruConnectedQueue", DISPATCH_QUEUE_SERIAL);
-        _connectPort = KOGLogPort;
-        _outputHandler = delegate;
+        _connectGroup = dispatch_group_create();
+        _connectionDelegate = delegate;
     }
+
+    KOGUSBConnector *anUsbConnector = [[KOGUSBConnector alloc] initWithPTChannelDelegate:self];
+    KOGWiFiConnector *aWiFiConnector = [[KOGWiFiConnector alloc] initWithPTChannelDelegate:self];
+    _connectors = @[anUsbConnector, aWiFiConnector];
+
     return self;
+}
+
+- (void)connectToPort:(NSNumber *)aPortNumber
+{
+    if (self.isConnected) return;
+
+    int port = aPortNumber.intValue;
+    if (port <= 1024 || port > 65535) {
+        NSLog(@"🚫 Illegal Port Number!");
+        return;
+    }
+
+    __block NSError *connectError = nil;
+    dispatch_queue_t backgroundQueue = dispatch_get_global_queue(0, 0);
+    for (KOGConnectorInterface *aConnector in self.connectors) {
+        dispatch_group_async(self.connectGroup, backgroundQueue, ^{
+            [aConnector connectToPort:port completionHandler:^(BOOL success, NSError *error) {
+                if (success) {
+                    self.isConnected = YES;
+                    self.connectedConnector = aConnector;
+                } else {
+                    connectError = error;
+                }
+            }];
+        });
+    }
+
+    dispatch_group_notify(self.connectGroup, dispatch_get_main_queue(), ^{
+        [self finishConnectionWithError: self.isConnected ? nil : connectError];
+    });
 }
 
 - (void)disconnect
 {
-    if (self.isConnectedToDevice) {
-        [self.connectedChannel close];
-        self.isConnectedToDevice = NO;
-
-        __strong id<KOGConnectorOutputDelegate> strongDelegate = self.outputHandler;
-        if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didCompleteWithError:)]) {
-            NSError *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:ENETDOWN userInfo:nil];
-            [strongDelegate connector:self didCompleteWithError:error];
-        }
+    if (NO == self.isConnected) {
+        return;
     }
-}
 
-- (void)connect
-{
-    // implemented by subClass
-}
+    [self.connectedConnector disconnectCompletionHandler:^{
+        self.isConnected = NO;
+    }];
 
-- (void)connectToPort:(int)aPort
-{
-    self.connectPort = aPort;
-}
-
-- (void)handleMessage:(NSString *)message logType:(KOGLogType)type
-{
-    __strong id<KOGConnectorOutputDelegate> strongDelegate = self.outputHandler;
-    if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didReceiveMessageType:message:)]) {
-        [strongDelegate connector:self didReceiveMessageType:type message:message];
-    }
 }
 
 - (void)sendMessage:(NSString *)aMessage
 {
     KOGatanaLog *log = [[KOGatanaLog alloc] initWithLogType:KOGLogTypeMessageNormal];
     log.logMessage = aMessage;
-    [self.connectedChannel sendFrameOfType:log.type tag:PTFrameNoTag withPayload:log.payload callback:^(NSError *error) {
-        if (error) {
-            NSLog(@"🚫 Failed to send message: %@", error);
+    [self.connectedConnector sendLog:log];
+}
+
+#pragma mark - Private Functions
+- (void)handleMessage:(NSString *)message logType:(KOGLogType)type
+{
+    __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
+    if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didReceiveMessageType:message:)]) {
+        if ([[NSThread currentThread] isMainThread]) {
+            [strongDelegate connector:self didReceiveMessageType:type message:message];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [strongDelegate connector:self didReceiveMessageType:type message:message];
+            });
         }
-    }];
+    }
+}
+
+- (void)finishConnectionWithError:(NSError *)anError
+{
+    __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
+    if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didFinishConnectionWithError:)]) {
+        if ([[NSThread currentThread] isMainThread]) {
+            [strongDelegate connector:self didFinishConnectionWithError:anError];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [strongDelegate connector:self didFinishConnectionWithError:anError];
+            });
+        }
+    }
 }
 
 #pragma mark - PTChannelDelegate
@@ -103,14 +154,22 @@
 }
 
 - (void)ioFrameChannel:(PTChannel*)channel didEndWithError:(NSError*)error {
-    [self disconnect];
+    if (!error) {
+        return;
+    }
 
-    if (error) {
-        __strong id<KOGConnectorOutputDelegate> strongDelegate = self.outputHandler;
-        if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didCompleteWithError:)]) {
-            [strongDelegate connector:self didCompleteWithError:error];
+    self.isConnected = NO;
+    __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
+    if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didEndWithError:)]) {
+        if ([[NSThread currentThread] isMainThread]) {
+            [strongDelegate connector:self didEndWithError:error];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [strongDelegate connector:self didEndWithError:error];
+            });
         }
     }
 }
 
 @end
+
