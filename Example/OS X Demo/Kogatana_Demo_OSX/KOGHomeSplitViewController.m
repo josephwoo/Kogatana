@@ -7,6 +7,8 @@
 //
 
 #import "KOGHomeSplitViewController.h"
+#import "KOGLogViewController.h"
+#import "KOGMessageViewController.h"
 
 @interface KOGHomeSplitViewController ()
 
@@ -16,7 +18,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do view setup here.
+
+    KOGLogViewController *logVCtrlr = [self.childViewControllers firstObject];
+    KOGMessageViewController *messageVCtrlr = [self.childViewControllers lastObject];
+    [messageVCtrlr setConnector:logVCtrlr.connector];
 }
 
 @end

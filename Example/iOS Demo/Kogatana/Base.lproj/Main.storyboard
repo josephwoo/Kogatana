@@ -5,7 +5,7 @@
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,21 +23,21 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mnf-9L-cYi">
-                                <rect key="frame" x="16" y="28" width="120" height="30"/>
-                                <state key="normal" title="📡 DebugOnPort"/>
+                                <rect key="frame" x="20" y="547" width="115" height="30"/>
+                                <state key="normal" title="📡 ListenOnPort"/>
                                 <connections>
                                     <action selector="enableDebugLog:" destination="whP-gf-Uak" eventType="touchUpInside" id="y7s-RH-JjQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bMb-e4-fkK">
-                                <rect key="frame" x="155" y="318" width="65" height="30"/>
+                                <rect key="frame" x="16" y="617" width="65" height="30"/>
                                 <state key="normal" title="Send Log"/>
                                 <connections>
                                     <action selector="sendLog:" destination="whP-gf-Uak" eventType="touchUpInside" id="J87-Ao-0XV"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tqz-dx-Mle">
-                                <rect key="frame" x="136" y="412" width="103" height="30"/>
+                                <rect key="frame" x="256" y="617" width="103" height="30"/>
                                 <state key="normal" title="Send Error Log">
                                     <color key="titleColor" red="0.50196081400000003" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
@@ -46,26 +46,40 @@
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="7579" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tfy-hb-DG7">
-                                <rect key="frame" x="144" y="28" width="211" height="30"/>
+                                <rect key="frame" x="143" y="547" width="212" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Received:" translatesAutoresizingMaskIntoConstraints="NO" id="v8N-iH-dwG">
+                                <rect key="frame" x="0.0" y="28" width="375" height="511"/>
+                                <color key="backgroundColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Mnf-9L-cYi" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leadingMargin" id="1aP-vu-ZsT"/>
-                            <constraint firstItem="tfy-hb-DG7" firstAttribute="top" secondItem="Mnf-9L-cYi" secondAttribute="top" id="6bn-Bw-jMD"/>
-                            <constraint firstItem="bMb-e4-fkK" firstAttribute="centerX" secondItem="TpU-gO-2f1" secondAttribute="centerX" id="F6f-vo-djP"/>
-                            <constraint firstAttribute="trailing" secondItem="tfy-hb-DG7" secondAttribute="trailing" constant="20" symbolic="YES" id="GcR-Hu-qKD"/>
-                            <constraint firstItem="tfy-hb-DG7" firstAttribute="leading" secondItem="Mnf-9L-cYi" secondAttribute="trailing" constant="8" symbolic="YES" id="QyR-XG-XI4"/>
-                            <constraint firstItem="bMb-e4-fkK" firstAttribute="centerY" secondItem="TpU-gO-2f1" secondAttribute="centerY" id="j8b-ly-QRE"/>
-                            <constraint firstItem="tqz-dx-Mle" firstAttribute="centerX" secondItem="bMb-e4-fkK" secondAttribute="centerX" id="k7j-fm-UWB"/>
-                            <constraint firstItem="Mnf-9L-cYi" firstAttribute="top" secondItem="uEw-UM-LJ8" secondAttribute="bottom" constant="8" symbolic="YES" id="sc1-8b-uqu"/>
-                            <constraint firstItem="tqz-dx-Mle" firstAttribute="top" secondItem="bMb-e4-fkK" secondAttribute="bottom" constant="64" id="zk6-So-5CJ"/>
+                            <constraint firstItem="bMb-e4-fkK" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leadingMargin" id="45l-xk-DL3"/>
+                            <constraint firstItem="Mnf-9L-cYi" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leading" constant="20" symbolic="YES" id="94w-rO-NQ5"/>
+                            <constraint firstAttribute="trailing" secondItem="tfy-hb-DG7" secondAttribute="trailing" constant="20" symbolic="YES" id="AtJ-nD-alt"/>
+                            <constraint firstItem="bMb-e4-fkK" firstAttribute="top" secondItem="Mnf-9L-cYi" secondAttribute="bottom" constant="40" id="C7u-qD-VuO"/>
+                            <constraint firstAttribute="bottom" secondItem="bMb-e4-fkK" secondAttribute="bottom" constant="20" symbolic="YES" id="I9J-er-hqV"/>
+                            <constraint firstItem="tqz-dx-Mle" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="bMb-e4-fkK" secondAttribute="trailing" constant="168" id="IjH-ZF-nwF"/>
+                            <constraint firstAttribute="trailing" secondItem="tfy-hb-DG7" secondAttribute="trailing" constant="20" id="LmJ-yM-9oN"/>
+                            <constraint firstItem="v8N-iH-dwG" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leading" id="PyG-K7-yLN"/>
+                            <constraint firstItem="Mnf-9L-cYi" firstAttribute="top" secondItem="v8N-iH-dwG" secondAttribute="bottom" constant="8" symbolic="YES" id="UhN-i8-clQ"/>
+                            <constraint firstItem="v8N-iH-dwG" firstAttribute="top" secondItem="uEw-UM-LJ8" secondAttribute="bottom" constant="8" symbolic="YES" id="Zbe-tb-FQt"/>
+                            <constraint firstAttribute="trailing" secondItem="v8N-iH-dwG" secondAttribute="trailing" id="Zzi-HJ-8U6"/>
+                            <constraint firstAttribute="bottom" secondItem="tqz-dx-Mle" secondAttribute="bottom" constant="8" symbolic="YES" id="bAw-F9-fv0"/>
+                            <constraint firstItem="tfy-hb-DG7" firstAttribute="centerY" secondItem="Mnf-9L-cYi" secondAttribute="centerY" id="elV-kq-5AM"/>
+                            <constraint firstItem="tfy-hb-DG7" firstAttribute="leading" secondItem="Mnf-9L-cYi" secondAttribute="trailing" constant="8" symbolic="YES" id="iLY-qX-vDG"/>
+                            <constraint firstItem="tqz-dx-Mle" firstAttribute="trailing" secondItem="TpU-gO-2f1" secondAttribute="trailingMargin" id="lES-Wd-czd"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="messageTextView" destination="v8N-iH-dwG" id="RQz-bU-gnc"/>
                         <outlet property="portTextField" destination="tfy-hb-DG7" id="Ii1-Zw-ik3"/>
                     </connections>
                 </viewController>

@@ -706,18 +706,52 @@
             </objects>
             <point key="canvasLocation" x="42" y="220"/>
         </scene>
-        <!--View Controller-->
+        <!--Message View Controller-->
         <scene sceneID="DPr-0C-hX1">
             <objects>
-                <viewController id="q0Y-un-jda" sceneMemberID="viewController">
+                <viewController id="q0Y-un-jda" customClass="KOGMessageViewController" sceneMemberID="viewController">
                     <view key="view" id="5Mz-aG-obE">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="399"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X2B-qc-MGk">
+                                <rect key="frame" x="0.0" y="49" width="200" height="350"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="350" id="MYc-LA-2Su"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" placeholderString="Send message to device" drawsBackground="YES" id="daF-fU-G6S">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K1g-2r-A5j">
+                                <rect key="frame" x="65" y="13" width="71" height="32"/>
+                                <buttonCell key="cell" type="push" title="Send" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wl5-4g-f0H">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="sendMessage:" target="q0Y-un-jda" id="aOA-W6-26i"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="K1g-2r-A5j" secondAttribute="bottom" constant="20" symbolic="YES" id="8XU-oC-d6a"/>
+                            <constraint firstItem="X2B-qc-MGk" firstAttribute="leading" secondItem="5Mz-aG-obE" secondAttribute="leading" id="Caf-dJ-SuA"/>
+                            <constraint firstItem="X2B-qc-MGk" firstAttribute="top" secondItem="5Mz-aG-obE" secondAttribute="top" id="EKE-F7-c9p"/>
+                            <constraint firstAttribute="trailing" secondItem="X2B-qc-MGk" secondAttribute="trailing" id="TFK-f0-mJD"/>
+                            <constraint firstItem="K1g-2r-A5j" firstAttribute="centerX" secondItem="5Mz-aG-obE" secondAttribute="centerX" id="fG2-Vd-SYg"/>
+                            <constraint firstItem="K1g-2r-A5j" firstAttribute="top" secondItem="X2B-qc-MGk" secondAttribute="bottom" constant="8" symbolic="YES" id="gR2-Sd-vb7"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="messageTextField" destination="X2B-qc-MGk" id="bQ8-Qe-OBw"/>
+                    </connections>
                 </viewController>
                 <customObject id="rCM-wh-rxh" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="712" y="406"/>
+            <point key="canvasLocation" x="587" y="455"/>
         </scene>
         <!--Log View Controller-->
         <scene sceneID="hIz-AP-VOD">

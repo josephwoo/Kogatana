@@ -16,25 +16,32 @@
 @property (strong) PTChannel *serverChannel;
 @property (strong) PTChannel *peerChannel;
 @property (nonatomic, assign) int listenPort;
-
+@property (nonatomic, weak) id<KOGListenningDelegate> delegate;
 @property (nonatomic, strong) NSMutableArray<KOGatanaLog *> *unSentLogStorage;
 
 @end
 
 @implementation KOGListener
 
-- (instancetype)init
+- (instancetype)initWithDelegate:(id<KOGListenningDelegate>)aDelegate
 {
     self = [super init];
     if (self) {
         _unSentLogStorage = [NSMutableArray array];
         _listenPort = KOGLogPort;
+        _delegate = aDelegate;
     }
     return self;
 }
 
 - (void)startListenning
 {
+    [self listenToPort:self.listenPort];
+}
+
+- (void)listenToPort:(int)aPort
+{
+    self.listenPort = aPort;
     PTChannel *channel = [PTChannel channelWithDelegate:self];
     [channel listenOnPort:self.listenPort IPv4Address:INADDR_LOOPBACK callback:^(NSError *error) {
         if (error) {
@@ -45,12 +52,6 @@
         NSLog(@"📡 Listening on 127.0.0.1:%d", self.listenPort);
         self.serverChannel = channel;
     }];
-}
-
-- (void)listenToPort:(int)aPort
-{
-    self.listenPort = aPort;
-    [self startListenning];
 }
 
 - (void)sendLog:(NSString *)message isStatus:(BOOL)isStatus
@@ -150,9 +151,14 @@ static NSString *kUnSentMessageLockToken = @"kUnSentMessageLockToken";
 
 - (void)ioFrameChannel:(PTChannel *)channel didReceiveFrameOfType:(uint32_t)type tag:(uint32_t)tag payload:(PTData *)payload
 {
-    NSData *data = [NSData dataWithContentsOfDispatchData:payload.dispatchData];
-    NSString *logMessage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"🔵 - %@", logMessage);
+    __strong id<KOGListenningDelegate> strongDelegate = self.delegate;
+    if (strongDelegate && [strongDelegate respondsToSelector:@selector(listener:didReceiveMessage:)]) {
+        NSData *data = [NSData dataWithContentsOfDispatchData:payload.dispatchData];
+        NSString *logMessage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        @within_main_thread(^void() {
+            [strongDelegate listener:self didReceiveMessage:logMessage];
+        });
+    }
 }
 
 @end
