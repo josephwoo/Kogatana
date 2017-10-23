@@ -10,7 +10,8 @@
 #import <KOGConnector.h>
 
 @interface KOGMessageViewController ()
-@property (weak) IBOutlet NSTextField *messageTextField;
+
+@property (unsafe_unretained) IBOutlet NSTextView *messageTextView;
 @end
 
 @implementation KOGMessageViewController
@@ -20,7 +21,10 @@
 }
 
 - (IBAction)sendMessage:(id)sender {
-    [self.connector sendMessage:self.messageTextField.stringValue];
+    NSString *message = self.messageTextView.textStorage.string;
+    if (message.length) {
+        [self.connector sendMessage:message];
+    }
 }
 
 @end
