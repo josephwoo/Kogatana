@@ -10,4 +10,20 @@
 
 static const int KOGLogPort = 7579; // "KO" 's ASCII = 75,79
 
+#define within_main_thread(block,...) \
+try {} @finally {} \
+do { \
+if ([[NSThread currentThread] isMainThread]) { \
+if (block) { \
+block(__VA_ARGS__); \
+} \
+} else { \
+if (block) { \
+dispatch_async(dispatch_get_main_queue(), ^(){ \
+block(__VA_ARGS__); \
+}); \
+} \
+} \
+} while(0)
+
 #endif /* Kogatana_prefix_h */

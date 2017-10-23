@@ -25,7 +25,8 @@
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		D806B4B61F9A07F000CE4112 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D806B4B41F9A07F000CE4112 /* README.md */; };
 		D806B4B81F9A08FF00CE4112 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = D806B4B71F9A08FF00CE4112 /* LICENSE */; };
-		D8A5AEC31F7CE47D002B3178 /* KOGHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A5AEC21F7CE47D002B3178 /* KOGHomeViewController.m */; };
+		D8189D8F1F9DC2B900604478 /* KOGHomeSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8189D8E1F9DC2B900604478 /* KOGHomeSplitViewController.m */; };
+		D8189D901F9DC42300604478 /* KOGLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8189D891F9DC24800604478 /* KOGLogViewController.m */; };
 		D8E48CF61F7CDD320071F20F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D8E48CF51F7CDD320071F20F /* AppDelegate.m */; };
 		D8E48CFB1F7CDD320071F20F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8E48CFA1F7CDD320071F20F /* Assets.xcassets */; };
 		D8E48CFE1F7CDD320071F20F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D8E48CFC1F7CDD320071F20F /* Main.storyboard */; };
@@ -102,8 +103,10 @@
 		B88F368427C2B211AC90BAD3 /* libPods-Kogatana_Demo_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Kogatana_Demo_OSX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D806B4B41F9A07F000CE4112 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		D806B4B71F9A08FF00CE4112 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		D8A5AEC11F7CE47D002B3178 /* KOGHomeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KOGHomeViewController.h; sourceTree = "<group>"; };
-		D8A5AEC21F7CE47D002B3178 /* KOGHomeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KOGHomeViewController.m; sourceTree = "<group>"; };
+		D8189D881F9DC24800604478 /* KOGLogViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KOGLogViewController.h; sourceTree = "<group>"; };
+		D8189D891F9DC24800604478 /* KOGLogViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KOGLogViewController.m; sourceTree = "<group>"; };
+		D8189D8D1F9DC2B900604478 /* KOGHomeSplitViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KOGHomeSplitViewController.h; sourceTree = "<group>"; };
+		D8189D8E1F9DC2B900604478 /* KOGHomeSplitViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KOGHomeSplitViewController.m; sourceTree = "<group>"; };
 		D8E48CF21F7CDD320071F20F /* Kogatana_OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kogatana_OSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8E48CF41F7CDD320071F20F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		D8E48CF51F7CDD320071F20F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -309,9 +312,11 @@
 		D8E48CF31F7CDD320071F20F /* Kogatana_Demo_OSX */ = {
 			isa = PBXGroup;
 			children = (
-				D8A5AEC11F7CE47D002B3178 /* KOGHomeViewController.h */,
-				D8A5AEC21F7CE47D002B3178 /* KOGHomeViewController.m */,
+				D8189D8D1F9DC2B900604478 /* KOGHomeSplitViewController.h */,
+				D8189D8E1F9DC2B900604478 /* KOGHomeSplitViewController.m */,
 				D8E48CFC1F7CDD320071F20F /* Main.storyboard */,
+				D8189D881F9DC24800604478 /* KOGLogViewController.h */,
+				D8189D891F9DC24800604478 /* KOGLogViewController.m */,
 				D876C4D01F7CDEEC00B49AF7 /* Supporting Files */,
 			);
 			path = Kogatana_Demo_OSX;
@@ -698,6 +703,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8189D8F1F9DC2B900604478 /* KOGHomeSplitViewController.m in Sources */,
 				6003F59E195388D20070C39A /* KOGAppDelegate.m in Sources */,
 				6003F5A7195388D20070C39A /* KOGViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
@@ -717,8 +723,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8E48D011F7CDD320071F20F /* main.m in Sources */,
+				D8189D901F9DC42300604478 /* KOGLogViewController.m in Sources */,
 				D8E48CF61F7CDD320071F20F /* AppDelegate.m in Sources */,
-				D8A5AEC31F7CE47D002B3178 /* KOGHomeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

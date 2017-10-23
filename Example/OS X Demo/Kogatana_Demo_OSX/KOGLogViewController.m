@@ -1,19 +1,17 @@
 //
-//  KOGHomeViewController.m
-//  Kogatano_Demo_OSX
+//  KOGLogViewController.m
+//  Kogatana
 //
-//  Created by Joe 楠 on 28/09/2017.
+//  Created by Joe 楠 on 23/10/2017.
 //  Copyright © 2017 josephwoo. All rights reserved.
 //
 
-#import "KOGHomeViewController.h"
+#import "KOGLogViewController.h"
 #import <QuartzCore/QuartzCore.h>
-
-#import <KOGConnector.h>
 
 static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
 
-@interface KOGHomeViewController () <KOGConnectionDelegate>
+@interface KOGLogViewController () <KOGConnectionDelegate, NSTextFieldDelegate>
 
 @property (unsafe_unretained) IBOutlet NSTextView *outputTextView;
 @property (strong, nonatomic) NSDictionary *consoleTextAttributes;
@@ -22,20 +20,21 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
 @property (weak) IBOutlet NSProgressIndicator *scanIdicator;
 
 @property (weak) IBOutlet NSTextField *portTextField;
-@property (nonatomic, strong) KOGConnector *connector;
-@property (nonatomic, strong) NSNumber *connectPort;
-
+@property (nonatomic, strong, readwrite) KOGConnector *connector;
+@property (nonatomic, assign) int connectPort;
 
 @end
 
-@implementation KOGHomeViewController
+@implementation KOGLogViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.portTextField.delegate = self;
     self.consoleTextAttributes = [self.class textAttributesMap];
 
     self.connector = [[KOGConnector alloc] initWithDelegate:self];
     [self.connector addObserver:self forKeyPath:@"isConnected" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:KOGObserverContextConnectStated];
+    self.connectPort = self.portTextField.placeholderString.intValue;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
@@ -76,31 +75,23 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
 
 - (void)_connectToDevice
 {
-    NSString *portString = self.portTextField.stringValue;
-    if (!portString.length) {
-        portString = self.portTextField.placeholderString;
-    }
-
-    int port = portString.intValue;
+    int port = self.connectPort;
     if (port <= 1024 || port > 65535) {
-        [self presentMessage:@"[Status]: 🚫 Illegal Port Number!" consoleTextAttributes:KOGLogTypeStateLogCaution];
+        [self presentMessage:@"[Status]: 🚫 Illegal Port Number: must 1024 < port < 65536" consoleTextAttributes:KOGLogTypeStateLogCaution];
+        [self updateScanButtonUIWithConnetorState:NO];
         return;
     }
 
-    self.connectPort = @(port);
-    [self.connector connectToPort:self.connectPort];
+    [self.connector connectToPort:@(self.connectPort)];
 }
 
-- (IBAction)sendMessage:(id)sender {
-    [self.connector sendMessage:@"Hello ~~"];
-}
 
-#pragma mark - ONIUSBConnectorOutputDelegate
+#pragma mark - KOGConnectionDelegate
 static const NSTimeInterval kReconnectDelay = 1.0;
 - (void)connector:(KOGConnector *)connector didFinishConnectionWithError:(NSError *)error
 {
     if (error && self.scanButton.tag) {
-        [connector performSelector:@selector(connectToPort:) withObject:self.connectPort afterDelay:kReconnectDelay];
+        [connector performSelector:@selector(connectToPort:) withObject:@(self.connectPort) afterDelay:kReconnectDelay];
     } else {
         if (self.scanButton.tag) {
             self.connector = connector;
@@ -156,6 +147,13 @@ static const NSTimeInterval kReconnectDelay = 1.0;
     [NSAnimationContext endGrouping];
 }
 
+#pragma mark - NSTextFieldDelegate
+- (void)controlTextDidChange:(NSNotification *)noti
+{
+    NSTextField *portTF = noti.object;
+    NSString *portString = portTF.stringValue;
+    self.connectPort = portString.length ? portString.intValue : portString.intValue;
+}
 
 #pragma mark - init Attributes
 + (NSDictionary *)textAttributesMap

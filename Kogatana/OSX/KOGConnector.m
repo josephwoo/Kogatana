@@ -8,6 +8,7 @@
 #import "KOGConnector.h"
 #import "PTChannel.h"
 
+#import "Kogatana-prefix.h"
 #import "KOGUSBConnector.h"
 #import "KOGWiFiConnector.h"
 
@@ -62,7 +63,13 @@
     }
 
     dispatch_group_notify(self.connectGroup, dispatch_get_main_queue(), ^{
-        [self finishConnectionWithError: self.isConnected ? nil : connectError];
+        __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
+        if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didFinishConnectionWithError:)]) {
+            NSError *error = self.isConnected ? nil : connectError;
+            @within_main_thread(^void() {
+                [strongDelegate connector:self didFinishConnectionWithError:error];
+            });
+        }
     });
 }
 
@@ -90,27 +97,9 @@
 {
     __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
     if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didReceiveMessageType:message:)]) {
-        if ([[NSThread currentThread] isMainThread]) {
+        @within_main_thread(^void() {
             [strongDelegate connector:self didReceiveMessageType:type message:message];
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [strongDelegate connector:self didReceiveMessageType:type message:message];
-            });
-        }
-    }
-}
-
-- (void)finishConnectionWithError:(NSError *)anError
-{
-    __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
-    if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didFinishConnectionWithError:)]) {
-        if ([[NSThread currentThread] isMainThread]) {
-            [strongDelegate connector:self didFinishConnectionWithError:anError];
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [strongDelegate connector:self didFinishConnectionWithError:anError];
-            });
-        }
+        });
     }
 }
 
@@ -161,13 +150,9 @@
     self.isConnected = NO;
     __strong id<KOGConnectionDelegate> strongDelegate = self.connectionDelegate;
     if (strongDelegate && [strongDelegate respondsToSelector:@selector(connector:didEndWithError:)]) {
-        if ([[NSThread currentThread] isMainThread]) {
+        @within_main_thread(^void() {
             [strongDelegate connector:self didEndWithError:error];
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [strongDelegate connector:self didEndWithError:error];
-            });
-        }
+        });
     }
 }
 
