@@ -11,13 +11,16 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.10'
   s.requires_arc = true
   s.source_files = 'Kogatana/**/**/*.{h,m}'
+  s.public_header_files = 'Kogatana/**/Public/*.h'
 
   s.subspec 'iOS' do |ss|
     ss.source_files = 'Kogatana/{iOS,Base}/**/*.{h,m}'
+    ss.public_header_files = 'Kogatana/{iOS,Base}/Public/*.h'
   end
 
   s.subspec 'OSX' do |ss|
     ss.source_files = 'Kogatana/{OSX,Base}/**/*.{h,m}'
+    ss.public_header_files = 'Kogatana/{OSX,Base}/Public/*.h'
   end
 
 end

@@ -6,6 +6,7 @@
 //
 
 #import "KOGConnectorInterface.h"
+#import "PTChannel.h"
 
 @implementation KOGConnectorInterface
 

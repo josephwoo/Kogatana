@@ -7,6 +7,7 @@
 //
 
 #import "KOGUSBConnector.h"
+#import "PTChannel.h"
 
 @interface KOGUSBConnector ()
 @property (nonatomic, strong) NSNumber *currentConnectedDeviceID;

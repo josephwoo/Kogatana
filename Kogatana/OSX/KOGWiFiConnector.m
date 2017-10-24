@@ -6,6 +6,7 @@
 //
 
 #import "KOGWiFiConnector.h"
+#import "PTChannel.h"
 
 @implementation KOGWiFiConnector
 - (instancetype)initWithPTChannelDelegate:(id<PTChannelDelegate>)aChannelDelegate

@@ -9,8 +9,10 @@
 #define KOGConnectorInterface_h
 
 #import <Foundation/Foundation.h>
-#import "PTChannel.h"
 #import "KOGatanaLog.h"
+
+@class PTChannel;
+@protocol PTChannelDelegate;
 
 @interface KOGConnectorInterface : NSObject
 @property (nonatomic, assign) BOOL isConnected;
