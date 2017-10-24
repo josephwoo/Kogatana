@@ -9,7 +9,7 @@
 #import "KOGMessageViewController.h"
 #import <KOGConnector.h>
 
-@interface KOGMessageViewController ()
+@interface KOGMessageViewController () <NSTextViewDelegate>
 
 @property (unsafe_unretained) IBOutlet NSTextView *messageTextView;
 @end
@@ -18,6 +18,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.messageTextView.delegate = self;
 }
 
 - (IBAction)sendMessage:(id)sender {
@@ -25,6 +26,17 @@
     if (message.length) {
         [self.connector sendMessage:message];
     }
+}
+
+#pragma mark - TextView Delegate
+- (BOOL)textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector
+{
+    if (commandSelector == @selector(insertNewline:)) {
+        NSString *message = textView.textStorage.string;
+        [self.connector sendMessage:message];
+        return YES;
+    }
+    return NO;
 }
 
 @end
