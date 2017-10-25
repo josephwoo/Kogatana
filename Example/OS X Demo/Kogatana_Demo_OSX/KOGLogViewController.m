@@ -31,6 +31,7 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
     [super viewDidLoad];
     self.portTextField.delegate = self;
     self.consoleTextAttributes = [self.class textAttributesMap];
+    [self addUSBObservers];
 
     self.connector = [[KOGConnector alloc] initWithDelegate:self];
     [self.connector addObserver:self forKeyPath:@"isConnected" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:KOGObserverContextConnectStated];
@@ -43,6 +44,18 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
         NSNumber *stateNumber = change[NSKeyValueChangeNewKey];
         [self updateScanButtonUIWithConnetorState:stateNumber.boolValue];
     }
+}
+
+- (void)addUSBObservers
+{
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserverForName:KOGUSBDeviceDidAttachNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        [self presentMessage:@"[Status]: ✅ USB attached!" consoleTextAttributes:KOGLogTypeStateLogNormal];
+    }];
+
+    [nc addObserverForName:KOGUSBDeviceDidDetachNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        [self presentMessage:@"[Status]: ⚠️ USB detached!" consoleTextAttributes:KOGLogTypeStateLogCaution];
+    }];
 }
 
 - (void)updateScanButtonUIWithConnetorState:(BOOL)isConnected
@@ -85,35 +98,8 @@ static void *KOGObserverContextConnectStated = &KOGObserverContextConnectStated;
     [self.connector connectToPort:@(self.connectPort)];
 }
 
-
-#pragma mark - KOGConnectionDelegate
-static const NSTimeInterval kReconnectDelay = 1.0;
-- (void)connector:(KOGConnector *)connector didFinishConnectionWithError:(NSError *)error
-{
-    if (error && self.scanButton.tag) {
-        [connector performSelector:@selector(connectToPort:) withObject:@(self.connectPort) afterDelay:kReconnectDelay];
-    } else {
-        if (self.scanButton.tag) {
-            self.connector = connector;
-            [self clearConsoleOutput];
-        }
-    }
-}
-
-- (void)connector:(KOGConnector *)connector didEndWithError:(NSError *)error
-{
-    if (error) {
-        [self presentMessage:@"[Status]: ⚠️ Closed Connection!" consoleTextAttributes:KOGLogTypeStateLogCaution];
-    }
-}
-
-- (void)connector:(KOGConnector *)connector didReceiveMessageType:(KOGLogType)type message:(NSString *)logMessage
-{
-    [self presentMessage:logMessage consoleTextAttributes:type];
-}
-
 #pragma mark - Message Pressent
-- (void)clearConsoleOutput
+- (IBAction)clearConsoleOutput:(id)sender
 {
     [self.outputTextView.textStorage beginEditing];
     NSAttributedString *attributedMessage = [[NSAttributedString alloc] initWithString:@""];
@@ -155,6 +141,33 @@ static const NSTimeInterval kReconnectDelay = 1.0;
     self.connectPort = portString.length ? portString.intValue : portString.intValue;
 }
 
+#pragma mark - KOGConnectionDelegate
+static const NSTimeInterval kReconnectDelay = 1.0;
+- (void)connector:(KOGConnector *)connector didFinishConnectionWithError:(NSError *)error
+{
+    if (error && self.scanButton.tag) {
+        [connector performSelector:@selector(connectToPort:) withObject:@(self.connectPort) afterDelay:kReconnectDelay];
+    } else {
+        if (self.scanButton.tag) {
+            self.connector = connector;
+            [self clearConsoleOutput:nil];
+        }
+    }
+}
+
+- (void)connector:(KOGConnector *)connector didEndWithError:(NSError *)error
+{
+    if (error) {
+        [self presentMessage:@"[Status]: ⚠️ Closed Connection!" consoleTextAttributes:KOGLogTypeStateLogCaution];
+    }
+}
+
+- (void)connector:(KOGConnector *)connector didReceiveMessageType:(KOGLogType)type message:(NSString *)logMessage
+{
+    [self presentMessage:logMessage consoleTextAttributes:type];
+}
+
+
 #pragma mark - init Attributes
 + (NSDictionary *)textAttributesMap
 {
@@ -182,6 +195,17 @@ static const NSTimeInterval kReconnectDelay = 1.0;
     });
 
     return attributes;
+}
+
+
+- (void)dealloc
+{
+    @try {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        [self.connector removeObserver:self forKeyPath:@"isConnected"];
+    } @catch (NSException *exception) {
+        NSLog(@"Exception: %@", exception);
+    }
 }
 
 @end

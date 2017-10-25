@@ -31,13 +31,7 @@
 
     [nc addObserverForName:PTUSBDeviceDidAttachNotification object:PTUSBHub.sharedHub queue:nil usingBlock:^(NSNotification *note) {
         NSNumber *deviceID = [note.userInfo objectForKey:@"DeviceID"];
-        NSLog(@"PTUSBDeviceDidAttachNotification: %@", deviceID);
         self.currentConnectedDeviceID = deviceID;
-    }];
-
-    [nc addObserverForName:PTUSBDeviceDidDetachNotification object:PTUSBHub.sharedHub queue:nil usingBlock:^(NSNotification *note) {
-        NSNumber *deviceID = [note.userInfo objectForKey:@"DeviceID"];
-        NSLog(@"PTUSBDeviceDidDetachNotification: %@", deviceID);
     }];
 }
 

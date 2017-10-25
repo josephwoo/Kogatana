@@ -8,6 +8,9 @@
 #import <Foundation/Foundation.h>
 #import "KOGatanaLog.h"
 
+extern NSString *const KOGUSBDeviceDidAttachNotification;
+extern NSString *const KOGUSBDeviceDidDetachNotification;
+
 @protocol KOGConnectionDelegate;
 
 @interface KOGConnector : NSObject

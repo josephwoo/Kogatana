@@ -12,6 +12,9 @@
 #import "KOGUSBConnector.h"
 #import "KOGWiFiConnector.h"
 
+NSString *const KOGUSBDeviceDidAttachNotification = @"PTUSBDeviceDidAttachNotification";
+NSString *const KOGUSBDeviceDidDetachNotification = @"PTUSBDeviceDidDetachNotification";
+
 @interface KOGConnector () <PTChannelDelegate>
 @property (nonatomic, strong) dispatch_queue_t connectQueue;
 @property (nonatomic, weak) id<KOGConnectionDelegate> connectionDelegate;

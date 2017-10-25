@@ -62,7 +62,7 @@
                                     <items>
                                         <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
                                             <connections>
-                                                <action selector="newDocument:" target="Ady-hI-5gd" id="4Si-XN-c54"/>
+                                                <action selector="createNewWindow:" target="Voe-Tx-rLC" id="FX3-Ve-sK5"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
@@ -684,7 +684,7 @@
         <!--Kogatana-->
         <scene sceneID="5cT-RB-Ylu">
             <objects>
-                <splitViewController title="Kogatana" id="P1V-al-iH7" customClass="KOGHomeSplitViewController" sceneMemberID="viewController">
+                <splitViewController title="Kogatana" storyboardIdentifier="HomeSplitVC" id="P1V-al-iH7" customClass="KOGHomeSplitViewController" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="ojM-z2-X0t"/>
                         <splitViewItem id="asV-Og-SxZ"/>
@@ -730,7 +730,7 @@
         <!--Message View Controller-->
         <scene sceneID="DPr-0C-hX1">
             <objects>
-                <viewController id="q0Y-un-jda" customClass="KOGMessageViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="KOGMessageVC" id="q0Y-un-jda" customClass="KOGMessageViewController" sceneMemberID="viewController">
                     <view key="view" id="5Mz-aG-obE">
                         <rect key="frame" x="0.0" y="0.0" width="200" height="400"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -792,7 +792,7 @@
         <!--Log View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="KOGLogViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="KOGLogVC" id="XfG-lQ-9wD" customClass="KOGLogViewController" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="500" height="400"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -879,10 +879,22 @@
                             <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="mXm-f6-mWe">
                                 <rect key="frame" x="197" y="23" width="16" height="16"/>
                             </progressIndicator>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="s5l-SZ-SJD">
+                                <rect key="frame" x="14" y="13" width="72" height="32"/>
+                                <buttonCell key="cell" type="push" title="Clear" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eUv-nG-3a4">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="clearConsoleOutput:" target="XfG-lQ-9wD" id="9AB-8W-jx9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="Za5-Aa-3Md" firstAttribute="leading" secondItem="ldI-LC-f0f" secondAttribute="trailing" constant="8" symbolic="YES" id="5Dr-9H-y7H"/>
                             <constraint firstAttribute="bottom" secondItem="uux-1Z-DOn" secondAttribute="bottom" constant="20" symbolic="YES" id="A1e-Jd-ayN"/>
+                            <constraint firstItem="s5l-SZ-SJD" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="ECQ-WY-IGL"/>
+                            <constraint firstItem="s5l-SZ-SJD" firstAttribute="centerY" secondItem="uux-1Z-DOn" secondAttribute="centerY" id="NHR-KO-Rl8"/>
                             <constraint firstItem="ldI-LC-f0f" firstAttribute="centerY" secondItem="uux-1Z-DOn" secondAttribute="centerY" id="PJp-mP-DQ7"/>
                             <constraint firstItem="ldI-LC-f0f" firstAttribute="leading" secondItem="uux-1Z-DOn" secondAttribute="trailing" constant="8" symbolic="YES" id="btp-mu-Lu5"/>
                             <constraint firstItem="uux-1Z-DOn" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="i0q-SF-cpv"/>

@@ -20,5 +20,6 @@
 @end
 
 @protocol KOGListenningDelegate <NSObject>
+- (void)listener:(KOGListener *)listener didAcceptConnectionFromAddress:(NSString *)address;
 - (void)listener:(KOGListener *)listener didReceiveMessage:(NSString *)logMessage;
 @end

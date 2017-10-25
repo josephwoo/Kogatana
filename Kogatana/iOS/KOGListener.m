@@ -126,9 +126,15 @@ static NSString *kUnSentMessageLockToken = @"kUnSentMessageLockToken";
     // (owned by its parent dispatch queue) until they are closed.
     self.peerChannel = otherChannel;
     self.peerChannel.userInfo = address;
-    NSLog(@"🔗 Connected to %@", address);
-    [self sendDeviceMessage:@"✅ Connected 📲"];
     
+    NSLog(@"🔗 Connected to %@", address);
+    __strong id<KOGListenningDelegate> strongDelegate = self.delegate;
+    if (strongDelegate && [strongDelegate respondsToSelector:@selector(listener:didAcceptConnectionFromAddress:)]) {
+        @within_main_thread(^void() {
+            [self.delegate listener:self didAcceptConnectionFromAddress:address.description];
+        });
+    }
+
     // 补偿发送未连接时，未发送的 log
     if (self.unSentLogStorage.count) {
         @synchronized (kUnSentMessageLockToken) {
@@ -138,15 +144,6 @@ static NSString *kUnSentMessageLockToken = @"kUnSentMessageLockToken";
             [self.unSentLogStorage removeAllObjects];
         }
     }
-}
-
-- (void)ioFrameChannel:(PTChannel*)channel didEndWithError:(NSError*)error {
-    if (error) {
-        NSLog(@"🚫 %@ ended with error: %@", channel, error);
-        return;
-    }
-
-    NSLog(@"⚠️ Disconnected from %@", channel.userInfo);
 }
 
 - (void)ioFrameChannel:(PTChannel *)channel didReceiveFrameOfType:(uint32_t)type tag:(uint32_t)tag payload:(PTData *)payload
@@ -161,4 +158,12 @@ static NSString *kUnSentMessageLockToken = @"kUnSentMessageLockToken";
     }
 }
 
+- (void)ioFrameChannel:(PTChannel*)channel didEndWithError:(NSError*)error {
+    if (error) {
+        NSLog(@"🚫 %@ ended with error: %@", channel, error);
+        return;
+    }
+
+    NSLog(@"⚠️ Disconnected from %@", channel.userInfo);
+}
 @end

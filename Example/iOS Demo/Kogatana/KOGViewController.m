@@ -65,6 +65,13 @@
 }
 
 #pragma mark - KOGListenningDelegate
+- (void)listener:(KOGListener *)listener didAcceptConnectionFromAddress:(NSString *)address
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [listener sendLog:[@"✅ Connected to => " stringByAppendingString:[UIDevice currentDevice].name] isStatus:YES];
+    });
+}
+
 - (void)listener:(KOGListener *)listener didReceiveMessage:(NSString *)logMessage
 {
     if (![logMessage isEqualToString:@"clear"]) {
